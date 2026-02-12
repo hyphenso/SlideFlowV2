@@ -1,0 +1,183 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==========================================
+// Core Lookup Tables
+// ==========================================
+
+model DevType {
+  dev_type  String   @id
+  dev_name  String
+
+  devices   Device[]
+
+  @@map("dev_type")
+}
+
+model Permission {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  profiles Profile[]
+
+  @@map("permission")
+}
+
+model Category {
+  id         Int       @id @default(autoincrement())
+  name       String
+  parent_id  Int?
+  created_at DateTime? @default(now())
+
+  parent     Category?     @relation("CategoryHierarchy", fields: [parent_id], references: [id])
+  children   Category[]    @relation("CategoryHierarchy")
+  contentCats ContentCat[]
+
+  @@map("category")
+}
+
+model Client {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  shows Show[]
+
+  @@map("client")
+}
+
+model Location {
+  id        Int     @id @default(autoincrement())
+  loc_name  String
+  wifi_name String?
+  uname     String?
+  pword     String?
+  otp       String?
+
+  shows Show[]
+
+  @@map("location")
+}
+
+// ==========================================
+// Main Entity Tables
+// ==========================================
+
+model Device {
+  id          Int    @id @default(autoincrement())
+  name        String?
+  mac         String
+  device_type String
+
+  devType DevType @relation(fields: [device_type], references: [dev_type], onDelete: Restrict)
+  shows   Show[]
+
+  @@map("device")
+}
+
+model Content {
+  id            Int       @id @default(autoincrement())
+  name          String
+  length        String?
+  description   String?
+  file_url      String?
+  thumbnail_url String?
+  mime_type     String?
+  file_size     BigInt?
+  folder_id     String?   @db.Uuid
+  type          String?
+  duration      Int?
+  metadata      Json      @default("{}")
+  created_by    String?   @db.Uuid
+  status        String?   @default("active")
+  created_at    DateTime? @default(now())
+  updated_at    DateTime? @default(now())
+
+  folder      Folder?      @relation(fields: [folder_id], references: [id])
+  contentCats ContentCat[]
+  shows       Show[]
+
+  @@map("content")
+}
+
+// ==========================================
+// Linking & Scheduling Tables
+// ==========================================
+
+model ContentCat {
+  id         Int @id @default(autoincrement())
+  content_id Int
+  cat_id     Int
+
+  content Content  @relation(fields: [content_id], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [cat_id], references: [id], onDelete: Cascade)
+
+  @@unique([content_id, cat_id])
+  @@map("content_cat")
+}
+
+model Show {
+  id          Int      @id @default(autoincrement())
+  content_id  Int?
+  device_id   Int?
+  location_id Int?
+  client_id   Int?
+  start_time  DateTime?
+  finish_time DateTime?
+  name        String?    @default("Untitled")
+  slides_data Json?      @default("[]")
+  created_at  DateTime?  @default(now())
+  updated_at  DateTime?  @default(now())
+
+  content  Content?  @relation(fields: [content_id], references: [id], onDelete: Cascade)
+  device   Device?   @relation(fields: [device_id], references: [id], onDelete: Cascade)
+  location Location? @relation(fields: [location_id], references: [id], onDelete: Cascade)
+  client   Client?   @relation(fields: [client_id], references: [id], onDelete: Cascade)
+
+  @@map("show")
+}
+
+// ==========================================
+// User Credentials (extends Supabase auth.users)
+// ==========================================
+
+model Credential {
+  id            String   @id @db.Uuid
+  username      String?  @unique
+  first_name    String?
+  last_name     String?
+  permission_id Int?
+  created_at    DateTime? @default(now())
+  updated_at    DateTime? @default(now())
+
+  permission Permission? @relation(fields: [permission_id], references: [id], onDelete: SetNull)
+
+  @@map("credentials")
+}
+
+// ==========================================
+// Folders (file system structure)
+// ==========================================
+
+model Folder {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  parent_id      String?  @db.Uuid
+  name           String
+  security_level String?  @default("inherit")
+  allowed_roles  String[]
+  created_at     DateTime? @default(now())
+  updated_at     DateTime? @default(now())
+
+  parent   Folder?   @relation("FolderHierarchy", fields: [parent_id], references: [id], onDelete: Cascade)
+  children Folder[]  @relation("FolderHierarchy")
+  contents Content[]
+
+  @@map("folders")
+}
