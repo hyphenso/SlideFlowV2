@@ -17,7 +17,6 @@ export default function RegisterPage() {
     email: "",
     password: "",
     confirmPassword: "",
-    organizationName: "",
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -41,14 +40,13 @@ export default function RegisterPage() {
           data: {
             first_name: formData.firstName,
             last_name: formData.lastName,
-            organization_name: formData.organizationName,
           },
         },
       });
 
       if (authError) {
         setError(authError.message);
-      } else {
+      } else if (data.user) {
         router.push("/auth/login?registered=true");
       }
     } catch {
@@ -97,16 +95,6 @@ export default function RegisterPage() {
                 placeholder="name@company.com"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="organizationName">Organization name</Label>
-              <Input
-                id="organizationName"
-                placeholder="Acme Inc."
-                value={formData.organizationName}
-                onChange={(e) => setFormData({ ...formData, organizationName: e.target.value })}
                 required
               />
             </div>

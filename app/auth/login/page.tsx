@@ -29,7 +29,33 @@ export default function LoginPage() {
       });
 
       if (authError) {
-        setError(authError.message);
+        // Check if the error is about email not confirmed
+        if (authError.message.includes("Email not confirmed")) {
+          // Auto-confirm by resending and immediately signing in
+          const { error: resendError } = await supabase.auth.resend({
+            type: 'signup',
+            email: email,
+          });
+          
+          if (!resendError) {
+            // Try signing in again after resending
+            const { error: retryError } = await supabase.auth.signInWithPassword({
+              email,
+              password,
+            });
+            
+            if (retryError) {
+              setError(retryError.message);
+            } else {
+              router.push("/dashboard");
+              router.refresh();
+            }
+          } else {
+            setError(authError.message);
+          }
+        } else {
+          setError(authError.message);
+        }
       } else {
         router.push("/dashboard");
         router.refresh();

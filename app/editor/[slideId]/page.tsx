@@ -621,7 +621,7 @@ export default function SlideEditorPage() {
       id: Math.random().toString(36).substr(2, 9),
       name: `Slide ${slides.length + 1}`,
       elements: [],
-      backgroundColor: darkMode ? "#0a0a0a" : "#ffffff",
+      backgroundColor: "#ffffff",
       duration: 10,
     };
     const newSlides = [...slides, newSlide];
@@ -748,40 +748,40 @@ export default function SlideEditorPage() {
 
   return (
     <TooltipProvider>
-      <div className={`h-screen flex flex-col ${darkMode ? 'dark' : ''}`}>
+      <div className={`h-screen flex flex-col ${darkMode ? 'editor-dark' : ''}`}>
         {/* Dark Mode Theme Styles */}
         <style jsx global>{`
-          .dark {
-            background-color: ${DARK_BG} !important;
-          }
-          .dark .editor-bg {
+          .editor-dark {
             background-color: ${DARK_BG};
           }
-          .dark .editor-panel {
+          .editor-dark .editor-bg {
+            background-color: ${DARK_BG};
+          }
+          .editor-dark .editor-panel {
             background-color: ${DARK_BG_LIGHTER};
             border-color: ${DARK_BORDER};
           }
-          .dark .editor-text {
+          .editor-dark .editor-text {
             color: ${DARK_TEXT};
           }
-          .dark .editor-text-muted {
+          .editor-dark .editor-text-muted {
             color: ${DARK_TEXT_MUTED};
           }
-          .dark .editor-input {
+          .editor-dark .editor-input {
             background-color: ${DARK_BG_DARKER};
             border-color: ${DARK_BORDER};
             color: ${DARK_TEXT};
           }
-          .dark .editor-button {
+          .editor-dark .editor-button {
             background-color: ${DARK_BG_LIGHTER};
-            border-color: ${DARK_BORDER};
+            border-color: ${DARK_TEXT};
             color: ${DARK_TEXT};
           }
-          .dark .editor-button:hover {
+          .editor-dark .editor-button:hover {
             background-color: ${DARK_BG};
             border-color: ${ACCENT_COLOR};
           }
-          .dark .editor-canvas {
+          .editor-dark .editor-canvas {
             background-color: ${DARK_BG_DARKER};
           }
         `}</style>
@@ -895,6 +895,15 @@ export default function SlideEditorPage() {
               )}
             </div>
             <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setDarkMode(!darkMode)}
+              className={darkMode ? 'editor-button hover:bg-[#3a4156]' : ''}
+              title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            >
+              {darkMode ? <Sun className="h-4 w-4 text-yellow-400" /> : <Moon className="h-4 w-4" />}
+            </Button>
+            <Button
               onClick={saveSlide}
               disabled={isSaving}
               className={darkMode ? 'bg-blue-600 hover:bg-blue-700 text-white' : ''}
@@ -928,7 +937,7 @@ export default function SlideEditorPage() {
                         variant={selectedTool === "select" ? "default" : "outline"}
                         size="icon"
                         onClick={() => setSelectedTool("select")}
-                        className={darkMode ? 'border-gray-600 hover:bg-gray-800' : ''}
+                        className={darkMode ? 'border-white hover:bg-gray-800' : ''}
                       >
                         <MousePointer2 className="h-4 w-4" />
                       </Button>
@@ -938,7 +947,7 @@ export default function SlideEditorPage() {
 
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" onClick={addText} className={darkMode ? 'border-gray-600 hover:bg-gray-800' : ''}>
+                      <Button variant="outline" size="icon" onClick={addText} className={darkMode ? 'border-white hover:bg-gray-800' : ''}>
                         <Type className="h-4 w-4" />
                       </Button>
                     </TooltipTrigger>
@@ -955,7 +964,7 @@ export default function SlideEditorPage() {
 
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" onClick={() => fileInputRef.current?.click()} className={darkMode ? 'border-gray-600 hover:bg-gray-800' : ''}>
+                      <Button variant="outline" size="icon" onClick={() => fileInputRef.current?.click()} className={darkMode ? 'border-white hover:bg-gray-800' : ''}>
                         <Upload className="h-4 w-4" />
                       </Button>
                     </TooltipTrigger>
@@ -964,7 +973,7 @@ export default function SlideEditorPage() {
 
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" onClick={() => { setIsPexelsOpen(true); setPexelsSearch(""); setPexelsImages([]); }} className={darkMode ? 'border-gray-600 hover:bg-gray-800' : ''}>
+                      <Button variant="outline" size="icon" onClick={() => { setIsPexelsOpen(true); setPexelsSearch(""); setPexelsImages([]); }} className={darkMode ? 'border-white hover:bg-gray-800' : ''}>
                         <ImageIcon className="h-4 w-4" />
                       </Button>
                     </TooltipTrigger>
@@ -975,7 +984,7 @@ export default function SlideEditorPage() {
                 <div className="grid grid-cols-4 gap-2 mt-2">
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" onClick={() => addShape("rect")} className={darkMode ? 'border-gray-600 hover:bg-gray-800' : ''}>
+                      <Button variant="outline" size="icon" onClick={() => addShape("rect")} className={darkMode ? 'border-white hover:bg-gray-800' : ''}>
                         <Square className="h-4 w-4" />
                       </Button>
                     </TooltipTrigger>
@@ -984,7 +993,7 @@ export default function SlideEditorPage() {
 
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" onClick={() => addShape("circle")} className={darkMode ? 'border-gray-600 hover:bg-gray-800' : ''}>
+                      <Button variant="outline" size="icon" onClick={() => addShape("circle")} className={darkMode ? 'border-white hover:bg-gray-800' : ''}>
                         <Circle className="h-4 w-4" />
                       </Button>
                     </TooltipTrigger>
@@ -993,7 +1002,7 @@ export default function SlideEditorPage() {
 
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" onClick={() => addShape("triangle")} className={darkMode ? 'border-gray-600 hover:bg-gray-800' : ''}>
+                      <Button variant="outline" size="icon" onClick={() => addShape("triangle")} className={darkMode ? 'border-white hover:bg-gray-800' : ''}>
                         <Triangle className="h-4 w-4" />
                       </Button>
                     </TooltipTrigger>
@@ -1002,7 +1011,7 @@ export default function SlideEditorPage() {
 
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" onClick={() => { setIsTemplatesOpen(true); loadTemplates(); }} className={darkMode ? 'border-gray-600 hover:bg-gray-800' : ''}>
+                      <Button variant="outline" size="icon" onClick={() => { setIsTemplatesOpen(true); loadTemplates(); }} className={darkMode ? 'border-white hover:bg-gray-800' : ''}>
                         <LayoutTemplate className="h-4 w-4" />
                       </Button>
                     </TooltipTrigger>
@@ -1017,7 +1026,7 @@ export default function SlideEditorPage() {
                 <div className="flex gap-2">
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" onClick={undo} disabled={historyIndex <= 0} className={darkMode ? 'border-gray-600 hover:bg-gray-800' : ''}>
+                      <Button variant="outline" size="icon" onClick={undo} disabled={historyIndex <= 0} className={darkMode ? 'border-white hover:bg-gray-800' : ''}>
                         <Undo className="h-4 w-4" />
                       </Button>
                     </TooltipTrigger>
@@ -1026,7 +1035,7 @@ export default function SlideEditorPage() {
 
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" onClick={redo} disabled={historyIndex >= history.length - 1} className={darkMode ? 'border-gray-600 hover:bg-gray-800' : ''}>
+                      <Button variant="outline" size="icon" onClick={redo} disabled={historyIndex >= history.length - 1} className={darkMode ? 'border-white hover:bg-gray-800' : ''}>
                         <Redo className="h-4 w-4" />
                       </Button>
                     </TooltipTrigger>
@@ -1035,7 +1044,7 @@ export default function SlideEditorPage() {
 
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" onClick={deleteElement} disabled={!selectedElement} className={darkMode ? 'border-gray-600 hover:bg-gray-800' : ''}>
+                      <Button variant="outline" size="icon" onClick={deleteElement} disabled={!selectedElement} className={darkMode ? 'border-white hover:bg-gray-800' : ''}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </TooltipTrigger>
